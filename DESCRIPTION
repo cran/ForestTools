@@ -1,8 +1,8 @@
 Package: ForestTools
 Type: Package
 Title: Analysing Remotely Sensed Forest Data
-Version: 0.1.1
-Date: 2017-03-05
+Version: 0.1.2
+Date: 2017-03-19
 Author: Andrew Plowright
 Maintainer: Andrew Plowright <andrew.plowright@alumni.ubc.ca>
 Description: Forest Tools provides functions for analyzing remotely sensed forest data.
@@ -17,6 +17,6 @@ URL: https://github.com/AndyPL22/ForestTools
 BugReports: https://github.com/AndyPL22/ForestTools/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2017-03-05 20:24:12 UTC; Andy
+Packaged: 2017-03-20 03:35:04 UTC; Andy
 Repository: CRAN
-Date/Publication: 2017-03-06 08:28:51
+Date/Publication: 2017-03-20 06:24:37 UTC
