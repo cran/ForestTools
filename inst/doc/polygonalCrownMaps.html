@@ -12,7 +12,7 @@
 
 <meta name="author" content="Andrew Plowright" />
 
-<meta name="date" content="2017-09-08" />
+<meta name="date" content="2018-04-04" />
 
 <title>Options for creating polygonal crown maps</title>
 
@@ -70,19 +70,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Options for creating polygonal crown maps</h1>
 <h4 class="author"><em>Andrew Plowright</em></h4>
-<h4 class="date"><em>2017-09-08</em></h4>
+<h4 class="date"><em>2018-04-04</em></h4>
 
 
 
-<div id="issues-with-segmentcrowns" class="section level2">
-<h2>Issues with <em>SegmentCrowns</em></h2>
-<p>Although the <code>SegmentCrowns</code> function computes crown maps as a raster, many users find that having crowns as polygons is more useful for analytical purposes. Therefore, a <code>format</code> argument was added which, when set to <code>format = &quot;polygons&quot;</code>, makes the function convert the raster map to a set of polygons. As an added benefit, the function also carries over the attributes of the <code>treetops</code> argument into the newly created polygons, i.e.: if an input treetop has a <em>height</em> field associated with it, its corresponding crown polygon will also have that same value. The <code>SegmentCrown</code> function also computes the crowns’ horizontal area, which is stored in the output’s <em>crownArea</em> field.</p>
+<div id="issues-with-mcws" class="section level2">
+<h2>Issues with <em>mcws</em></h2>
+<p>Although the <code>mcws</code> function computes crown maps as a raster, many users find that having crowns as polygons is more useful for analytical purposes. Therefore, a <code>format</code> argument was added which, when set to <code>format = &quot;polygons&quot;</code>, makes the function convert the raster map to a set of polygons. As an added benefit, the function also carries over the attributes of the <code>treetops</code> argument into the newly created polygons, i.e.: if an input treetop has a <em>height</em> field associated with it, its corresponding crown polygon will also have that same value. The <code>SegmentCrown</code> function also computes the crowns’ horizontal area, which is stored in the output’s <em>crownArea</em> field.</p>
 <p>However, the underlying function used to convert rasters to polygons is <code>rasterToPolygons</code>, from the <a href="https://cran.r-project.org/package=raster">raster</a> package. This function is problematic due to its slow processing speed and its tendency to leak memory when applied to multiple datasets.</p>
 </div>
 <div id="using-the-gdal-library-instead" class="section level2">
 <h2>Using the GDAL library instead</h2>
 <p>An alternative option is available for users who have installed <a href="https://trac.osgeo.org/osgeo4w/">OSGeo for Windows</a>. OSGeo4W is a suite of free open source geospatial software, such as GDAL, GRASS and QGIS. In particular, it contains the <em>gdal_polygonize.py</em> GDAL utility, which performs the same function as <code>rasterToPolygons</code> but with a much better performance.</p>
-<p>John Baumgartner and Francisco Rodriguez-Sanchez <a href="https://johnbaumgartner.wordpress.com/2012/07/26/getting-rasters-into-shape-from-r/">developed a script</a> to run the <em>gdal_polygonize.py</em> utility from R. This solution has been integrated into the <code>SegmentCrowns</code> function.</p>
+<p>John Baumgartner and Francisco Rodriguez-Sanchez <a href="https://johnbaumgartner.wordpress.com/2012/07/26/getting-rasters-into-shape-from-r/">developed a script</a> to run the <em>gdal_polygonize.py</em> utility from R. This solution has been integrated into the <code>mcws</code> function.</p>
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
@@ -120,14 +120,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
-<p>Once OSGeo4W has been installed, the only new argument that must be defined when using <code>SegmentCrowns</code> is <code>OSGeoPath</code>, the path to the OSGeo4W installation directory. By default, the path for the 64-bit version of OSGeo4W is ‘C:\OSGeo4W64’. Simply add this parameter to <code>SegmentCrowns</code>, and the function will use the GDAL library for computing crown polygons.</p>
+<p>Once OSGeo4W has been installed, the only new argument that must be defined when using <code>mcws</code> is <code>OSGeoPath</code>, the path to the OSGeo4W installation directory. By default, the path for the 64-bit version of OSGeo4W is ‘C:\OSGeo4W64’. Simply add this parameter to <code>mcws</code>, and the function will use the GDAL library for computing crown polygons.</p>
 <p>This should significantly improve processing speeds and resolve memory leak issues from earlier version.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ForestTools)
 
 <span class="kw">data</span>(<span class="st">&quot;kootenayCHM&quot;</span>)
 <span class="kw">data</span>(<span class="st">&quot;kootenayTrees&quot;</span>)
 
-kootenayCrowns &lt;-<span class="st"> </span><span class="kw">SegmentCrowns</span>(kootenayTrees, kootenayCHM, <span class="dt">minHeight =</span> <span class="fl">1.5</span>, <span class="dt">format =</span> <span class="st">&quot;polygons&quot;</span>, <span class="dt">OSGeoPath =</span> <span class="st">&quot;C:</span><span class="ch">\\</span><span class="st">OSGeo4W64&quot;</span>)</code></pre></div>
+kootenayCrowns &lt;-<span class="st"> </span><span class="kw">mcws</span>(kootenayTrees, kootenayCHM, <span class="dt">minHeight =</span> <span class="fl">1.5</span>, <span class="dt">format =</span> <span class="st">&quot;polygons&quot;</span>, <span class="dt">OSGeoPath =</span> <span class="st">&quot;C:</span><span class="ch">\\</span><span class="st">OSGeo4W64&quot;</span>)</code></pre></div>
 </div>
 
 

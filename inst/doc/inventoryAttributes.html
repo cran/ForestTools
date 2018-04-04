@@ -12,7 +12,7 @@
 
 <meta name="author" content="Andrew Plowright" />
 
-<meta name="date" content="2017-09-08" />
+<meta name="date" content="2018-04-04" />
 
 <title>Calculating inventory attributes using Forest Tools</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Calculating inventory attributes using Forest Tools</h1>
 <h4 class="author"><em>Andrew Plowright</em></h4>
-<h4 class="date"><em>2017-09-08</em></h4>
+<h4 class="date"><em>2018-04-04</em></h4>
 
 
 
@@ -102,14 +102,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="compute-top-height-for-1-hectare-grid" class="section level2">
 <h2>Compute top height for 1 hectare grid</h2>
-<p>Given the large number of treetops in the <code>quesnelTrees</code> dataset, visualizing it in its entirety is difficult. Instead, it is more practical to view a rasterized representation of the trees’ attributes. This can be done using the <code>SpatialStatistics</code> function.</p>
+<p>Given the large number of treetops in the <code>quesnelTrees</code> dataset, visualizing it in its entirety is difficult. Instead, it is more practical to view a rasterized representation of the trees’ attributes. This can be done using the <code>sp_summarise</code> function.</p>
 <p>The first step is to define a function for computing the statistic that we’re interested in. In this case, we want the average height of the tallest 100 trees. It is important, however, that our function accept a number of trees lower than 100 without returning an error—in this case, it should simply return the average height of all trees in the area. We should also consider the possibility that some trees will have NA (non-available) height values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create custom function for computing top height</span>
-topHgtFun &lt;-<span class="st"> </span>function(x, ...) <span class="kw">mean</span>(<span class="kw">tail</span>(<span class="kw">sort</span>(x), <span class="dv">100</span>))</code></pre></div>
+topHgtFun &lt;-<span class="st"> </span><span class="cf">function</span>(x, ...) <span class="kw">mean</span>(<span class="kw">tail</span>(<span class="kw">sort</span>(x), <span class="dv">100</span>))</code></pre></div>
 <p>In this example <code>x</code> would be a series of tree heights. The <code>sort</code> function will arrange them in ascending order (and also remove NA values), and the <code>tail</code> function will subset the last 100 values (i.e.: the highest values). Finally, the <code>mean</code> function will compute the average.</p>
-<p>We will now apply the newly created <code>topHgtFun</code> to our <code>quesnelTrees</code> dataset using the <code>SpatialStatistics</code> function. We set the <code>grid</code> argument to 100 to generate a 100 m x 100 m (1 ha) grid. It is important to enter <code>topHgtFun</code> as a <em>named list</em>: “Top100” will be part of the name given to the product of the function. If other statistics are required, their corresponding functions can be added to this list.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use SpatialStatistics to generate gridded statistics</span>
-sptStatRas &lt;-<span class="st"> </span><span class="kw">SpatialStatistics</span>(<span class="dt">trees =</span> quesnelTrees, <span class="dt">variables =</span> <span class="st">&quot;height&quot;</span>, <span class="dt">grid =</span> <span class="dv">100</span>, <span class="dt">statFuns =</span> <span class="kw">list</span>(<span class="dt">Top100 =</span> topHgtFun))
+<p>We will now apply the newly created <code>topHgtFun</code> to our <code>quesnelTrees</code> dataset using the <code>sp_summarise</code> function. We set the <code>grid</code> argument to 100 to generate a 100 m x 100 m (1 ha) grid. It is important to enter <code>topHgtFun</code> as a <em>named list</em>: “Top100” will be part of the name given to the product of the function. If other statistics are required, their corresponding functions can be added to this list.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use sp_summarise to generate gridded statistics</span>
+sptStatRas &lt;-<span class="st"> </span><span class="kw">sp_summarise</span>(<span class="dt">trees =</span> quesnelTrees, <span class="dt">variables =</span> <span class="st">&quot;height&quot;</span>, <span class="dt">grid =</span> <span class="dv">100</span>, <span class="dt">statFuns =</span> <span class="kw">list</span>(<span class="dt">Top100 =</span> topHgtFun))
 
 <span class="co"># View information about the result</span>
 sptStatRas</code></pre></div>
@@ -122,7 +122,7 @@ sptStatRas</code></pre></div>
 ## names       : TreeCount, heightTop100 
 ## min values  :  1.000000,     2.707648 
 ## max values  : 427.00000,     32.61098</code></pre>
-<p>The product of <code>SpatialStatistics</code> is a <a href="https://cran.r-project.org/package=raster/raster.pdf#page=36">RasterBrick</a>, i.e.: a multi-layered raster. It contains two layers: <em>TreeCount</em> and <em>heightTop100</em>, the product of our custom function when applied to the <em>height</em> attribute of the trees in each cell. We can subset a single layer from the RasterBrick using the <code>[[]]</code> operator</p>
+<p>The product of <code>sp_summarise</code> is a <a href="https://cran.r-project.org/package=raster/raster.pdf#page=36">RasterBrick</a>, i.e.: a multi-layered raster. It contains two layers: <em>TreeCount</em> and <em>heightTop100</em>, the product of our custom function when applied to the <em>height</em> attribute of the trees in each cell. We can subset a single layer from the RasterBrick using the <code>[[]]</code> operator</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Subset top height raster</span>
 topHgtRas &lt;-<span class="st"> </span>sptStatRas[[<span class="st">&quot;heightTop100&quot;</span>]]
 

@@ -12,5 +12,5 @@ knitr::opts_knit$set(global.par = TRUE)
 #  data("kootenayCHM")
 #  data("kootenayTrees")
 #  
-#  kootenayCrowns <- SegmentCrowns(kootenayTrees, kootenayCHM, minHeight = 1.5, format = "polygons", OSGeoPath = "C:\\OSGeo4W64")
+#  kootenayCrowns <- mcws(kootenayTrees, kootenayCHM, minHeight = 1.5, format = "polygons", OSGeoPath = "C:\\OSGeo4W64")
 

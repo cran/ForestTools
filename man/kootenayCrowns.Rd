@@ -4,7 +4,7 @@
 \name{kootenayCrowns}
 \alias{kootenayCrowns}
 \title{Kootenay forest - Tree crowns}
-\format{A \link[sp]{SpatialPolygonsDataFrame} with the following attributes:
+\format{A \link[sp:SpatialPolygons]{SpatialPolygonsDataFrame} with the following attributes:
 \describe{
   \item{height}{height of the tree's apex, in meters above ground. Inherited from \link{kootenayTrees}.}
   \item{winRadius}{radius of the moving window at the treetop's location. Inherited from \link{kootenayTrees}.}
@@ -14,7 +14,7 @@
 kootenayCrowns
 }
 \description{
-Outlines of tree crowns corresponding to the \link{kootenayTrees} treetops. Generated using \link{SegmentCrowns}.
+Outlines of tree crowns corresponding to the \link{kootenayTrees} treetops. Generated using \link{mcws}.
 }
 \seealso{
 \link{kootenayTrees} \link{kootenayCHM} \link{kootenayBlocks}

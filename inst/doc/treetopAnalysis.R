@@ -28,7 +28,7 @@ plot(kootenayCHM, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 lin <- function(x){x * 0.05 + 0.6}
 
 ## ------------------------------------------------------------------------
-ttops <- TreeTopFinder(CHM = kootenayCHM, winFun = lin, minHeight = 2)
+ttops <- vwf(CHM = kootenayCHM, winFun = lin, minHeight = 2)
 
 ## ---- fig.width = 4, fig.height = 2.51-----------------------------------
 # Plot CHM
@@ -44,14 +44,14 @@ mean(ttops$height)
 
 ## ---- fig.width = 4, fig.height = 2.51-----------------------------------
 # Create crown map
-crowns <- SegmentCrowns(treetops = ttops, CHM = kootenayCHM, minHeight = 1.5, verbose = FALSE)
+crowns <- mcws(treetops = ttops, CHM = kootenayCHM, minHeight = 1.5, verbose = FALSE)
 
 # Plot crowns
 plot(crowns, col = sample(rainbow(50), length(unique(crowns[])), replace = TRUE), legend = FALSE, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 
 ## ---- fig.width = 4, fig.height = 2.51-----------------------------------
 # Create polygon crown map
-crownsPoly <- SegmentCrowns(treetops = ttops, CHM = kootenayCHM, format = "polygons", minHeight = 1.5, verbose = FALSE)
+crownsPoly <- mcws(treetops = ttops, CHM = kootenayCHM, format = "polygons", minHeight = 1.5, verbose = FALSE)
 
 # Plot CHM
 plot(kootenayCHM, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
@@ -67,16 +67,16 @@ crownsPoly[["crownDiameter"]] <- sqrt(crownsPoly[["crownArea"]]/ pi) * 2
 mean(crownsPoly$crownDiameter)
 
 ## ------------------------------------------------------------------------
-SpatialStatistics(ttops)
+sp_summarise(ttops)
 
 ## ------------------------------------------------------------------------
-SpatialStatistics(crownsPoly, variables = c("crownArea", "height"))
+sp_summarise(crownsPoly, variables = c("crownArea", "height"))
 
 ## ---- fig.width = 4, fig.height = 2.51, message = FALSE------------------
 data("kootenayBlocks")
 
 # Compute tree count and height statistics for cut blocks
-blockStats <- SpatialStatistics(ttops, areas = kootenayBlocks, variables = "height")
+blockStats <- sp_summarise(ttops, areas = kootenayBlocks, variables = "height")
 
 # Plot CHM
 plot(kootenayCHM, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
@@ -93,14 +93,14 @@ blockStats@data
 
 ## ---- fig.width = 4, fig.height = 2.51-----------------------------------
 # Compute tree count within a 10 m x 10 m cell grid
-gridCount <- SpatialStatistics(ttops, grid = 10)
+gridCount <- sp_summarise(ttops, grid = 10)
 
 # Plot grid
 plot(gridCount, col = heat.colors(255), xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 
 ## ------------------------------------------------------------------------
 # Compute tree height statistics within a 10 m x 10 m cell grid
-gridStats <- SpatialStatistics(trees = ttops, grid = 10, variables = "height")
+gridStats <- sp_summarise(trees = ttops, grid = 10, variables = "height")
 
 # View layer names
 names(gridStats)
@@ -118,7 +118,7 @@ custFuns <- list(quant98, max)
 names(custFuns) <- c("98thQuantile", "Max")
 
 # Generate statistics for crown areas and tree heights
-SpatialStatistics(crownsPoly, variables = c("crownArea", "height"), statFuns = custFuns)
+sp_summarise(crownsPoly, variables = c("crownArea", "height"), statFuns = custFuns)
 
 
 ## ---- echo = FALSE-------------------------------------------------------

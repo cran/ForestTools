@@ -22,8 +22,8 @@ plot(quesnelBlocks, add = TRUE, border =  "darkmagenta", lwd = 2)
 topHgtFun <- function(x, ...) mean(tail(sort(x), 100))
 
 ## ------------------------------------------------------------------------
-# Use SpatialStatistics to generate gridded statistics
-sptStatRas <- SpatialStatistics(trees = quesnelTrees, variables = "height", grid = 100, statFuns = list(Top100 = topHgtFun))
+# Use sp_summarise to generate gridded statistics
+sptStatRas <- sp_summarise(trees = quesnelTrees, variables = "height", grid = 100, statFuns = list(Top100 = topHgtFun))
 
 # View information about the result
 sptStatRas
