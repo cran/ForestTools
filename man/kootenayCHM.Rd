@@ -4,8 +4,10 @@
 \name{kootenayCHM}
 \alias{kootenayCHM}
 \title{Kootenay forest - Canopy height model}
-\format{A RasterLayer
-\describe{Cell values are equal to canopy height above ground (in meters)}}
+\format{
+A RasterLayer
+\describe{Cell values are equal to canopy height above ground (in meters)}
+}
 \source{
 Data acquired from a photogrammetric drone survey performed by Spire Aerobotics
 on June 16th, 2016.
@@ -18,6 +20,6 @@ A canopy height model of a 1.5 hectare section of forest in the Kootenay mountai
 British Columbia, Canada.
 }
 \seealso{
-\link{kootenayTrees} \link{kootenayBlocks} \link{kootenayCrowns}
+\link{kootenayTrees} \link{kootenayBlocks} \link{kootenayCrowns} \link{kootenayOrtho}
 }
 \keyword{datasets}

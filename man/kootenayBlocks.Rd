@@ -4,21 +4,23 @@
 \name{kootenayBlocks}
 \alias{kootenayBlocks}
 \title{Kootenay forest - Cut blocks}
-\format{A \link[sp:SpatialPolygons]{SpatialPolygonsDataFrame} with the following attributes:
+\format{
+A \link[sp:SpatialPolygons]{SpatialPolygonsDataFrame} with the following attributes:
 \describe{
   \item{BlockID}{numerical identifier for each block}
   \item{Shape_Leng}{length of polygon on meters}
   \item{Shape_Area}{area of polygon in square meters}
-  }}
+  }
+}
 \usage{
 kootenayBlocks
 }
 \description{
 Boundaries of cut blocks within a 1.5 hectare section of forest in
 the Kootenay mountains, in British Columbia, Canada. Each block contains trees of different
-levels of maturity. Overlaps with \link{kootenayTrees}, \link{kootenayCrowns} and \link{kootenayCHM}.
+levels of maturity. Overlaps with \link{kootenayTrees}, \link{kootenayCrowns}, \link{kootenayOrtho} and \link{kootenayCHM}.
 }
 \seealso{
-\link{kootenayTrees} \link{kootenayCHM} \link{kootenayCrowns}
+\link{kootenayTrees} \link{kootenayCHM} \link{kootenayCrowns} \link{kootenayOrtho}
 }
 \keyword{datasets}

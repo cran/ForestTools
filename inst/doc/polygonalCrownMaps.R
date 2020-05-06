@@ -1,12 +1,12 @@
-## ----global_options, include=FALSE, dpi =  300---------------------------
+## ----global_options, include=FALSE, dpi =  300--------------------------------
 knitr::opts_knit$set(global.par = TRUE)
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  update.packages()
 #  
 #  packageVersion("APfun")
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  library(ForestTools)
 #  
 #  data("kootenayCHM")

@@ -1,7 +1,7 @@
-## ----global_options, include=FALSE, dpi =  300---------------------------
+## ----global_options, include=FALSE, dpi =  300--------------------------------
 knitr::opts_knit$set(global.par = TRUE)
 
-## ---- message = FALSE----------------------------------------------------
+## ---- message = FALSE---------------------------------------------------------
 # Attach the 'ForestTools' and 'raster' libraries
 library(ForestTools)
 library(raster)
@@ -9,7 +9,7 @@ library(raster)
 # Load sample canopy height model, treetops and block boundaries
 data("quesnelCHM", "quesnelTrees", "quesnelBlocks")
 
-## ---- fig.width = 4, fig.height = 2.51-----------------------------------
+## ---- fig.width = 4, fig.height = 2.51----------------------------------------
 # Remove plot margins (optional)
 par(mar = rep(0.5, 4))
 
@@ -17,25 +17,25 @@ par(mar = rep(0.5, 4))
 plot(quesnelCHM, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 plot(quesnelBlocks, add = TRUE, border =  "darkmagenta", lwd = 2)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Create custom function for computing top height
 topHgtFun <- function(x, ...) mean(tail(sort(x), 100))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Use sp_summarise to generate gridded statistics
 sptStatRas <- sp_summarise(trees = quesnelTrees, variables = "height", grid = 100, statFuns = list(Top100 = topHgtFun))
 
 # View information about the result
 sptStatRas
 
-## ---- fig.width = 4, fig.height = 2.51-----------------------------------
+## ---- fig.width = 4, fig.height = 2.51----------------------------------------
 # Subset top height raster
 topHgtRas <- sptStatRas[["heightTop100"]]
 
 # View top height on a 1 ha grid
 plot(topHgtRas, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 
-## ---- fig.width = 4, fig.height = 2.51-----------------------------------
+## ---- fig.width = 4, fig.height = 2.51----------------------------------------
 # Rasterize block boundaries
 blockRas <- rasterize(quesnelBlocks, topHgtRas)
 
@@ -46,7 +46,7 @@ plot(blockRas, xlab = "", ylab = "", xaxt='n', yaxt = 'n')
 zoneStat <- zonal(topHgtRas, blockRas, 'mean')
 zoneStat
 
-## ---- fig.width = 4, fig.height = 2.51, message = FALSE------------------
+## ---- fig.width = 4, fig.height = 2.51, message = FALSE-----------------------
 # Create new 'topHeight' attribute from zonal statistics
 quesnelBlocks[["topHeight"]] <- zoneStat[,"mean"]
 

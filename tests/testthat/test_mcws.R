@@ -2,17 +2,17 @@ library(ForestTools)
 
 context("Tests for 'mcws'")
 
-### LOAD TEST DATA
+### LOAD TEST DATA ----
 
-load("testTrees.Rda")
-load("testCHM.Rda")
-load("emptyCHM.Rda")
-load("orphanCHM.Rda")
-load("orphantrees.Rda")
+  load("testTrees.Rda")
+  load("testCHM.Rda")
+  load("emptyCHM.Rda")
+  load("orphanCHM.Rda")
+  load("orphantrees.Rda")
 
-### PERFORM TESTS
+### PERFORM TESTS ----
 
-  test_that("SegmentCrown: expected results using standard parameters", {
+  test_that("mcws: expected results using standard parameters", {
 
     segs.std <- mcws(testTrees, testCHM, minHeight = 1, verbose = FALSE)
 
