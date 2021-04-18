@@ -10,7 +10,7 @@
 #' longer to process. It is advisable to run this function using a raster output first, in order to check
 #' its results and adjust parameters.
 #'
-#' Using the 'polygons' output \code{format} provides the added benefit of transferring
+#' Using the polygons provides the added benefit of transferring
 #' treetop attributes (such as \emph{height}) to the newly created polygons. The area of each crown will also
 #' automatically be calculated and added to the polygons' data under the \emph{crownArea} field. Furthermore,
 #' "orphaned" segments (i.e.: outlines without an associated treetop) will be removed when
@@ -46,6 +46,7 @@
 #' OSGeo4W download page: \url{https://trac.osgeo.org/osgeo4w/}
 #'
 #' @examples
+#' \dontrun{
 #' # Use variable window filter to detect treetops in demo canopy height model
 #' ttops <- vwf(CHMdemo, winFun = function(x){x * 0.06 + 0.5}, minHeight = 2)
 #'
@@ -54,6 +55,7 @@
 #'
 #' # Use 'mcws' to outline tree crowns
 #' segs <- mcws(ttops, CHMdemo, minCrwnHgt)
+#' }
 #'
 #' @export
 
