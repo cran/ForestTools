@@ -1,179 +1,156 @@
 #' Marker-Controlled Watershed Segmentation
 #'
-#' Implements the \link[imager]{watershed} function to segment (i.e.: outline) crowns from a canopy height model.
+#' This function implements the \link[imager]{watershed} function to segment (i.e.: outline) crowns from a CHM (canopy height model).
 #' Segmentation is guided by the point locations of treetops, typically detected using the \link{vwf} function.
 #' See Meyer & Beucher (1990) for details on watershed segmentation.
 #'
-#' This function can return a crown map as either a \link[raster]{raster} or a \link[sp:SpatialPolygons]{SpatialPolygonsDataFrame},
-#' as defined using the \code{format} argument. For most analytical purposes, it is preferable to have
+#' Crown segments are returned as either a \code{SpatRaster} or a \code{sf} (Simple Feature) class object,
+#' as defined using the \code{format} argument. For many analytic purposes, it is preferable to have
 #' crown outlines as polygons. However, polygonal crown maps take up significantly more disk space, and take
-#' longer to process. It is advisable to run this function using a raster output first, in order to check
-#' its results and adjust parameters.
+#' longer to process. It is advisable to run this function using a raster output first to review
+#' results and adjust parameters.
 #'
-#' Using the polygons provides the added benefit of transferring
-#' treetop attributes (such as \emph{height}) to the newly created polygons. The area of each crown will also
-#' automatically be calculated and added to the polygons' data under the \emph{crownArea} field. Furthermore,
-#' "orphaned" segments (i.e.: outlines without an associated treetop) will be removed when
-#' \code{format} is set to 'polygons'.
+#' NOTE: when setting \code{format} to 'polygons', orphaned segments (i.e.: outlines without an associated treetop) will be removed.
+#' This will NOT occur using 'raster' format. This issue will be resolved eventually but requires the watershed function to
+#' be rewritten.
 #'
-#' By default, polygonal crown outlines are produced internally using the the \code{rasterToPolygons} function from
-#' the \link[raster]{raster} package. This function is problematic due to it being 1) very slow and 2) leaking memory
-#' when applied to multiple datasets. An alternative is provided for users who've installed OSGeo4W and Python.
-#' By setting the \code{OSGeoPath} path to the OSGeo4W installation directory (usually 'C:\\OSGeo4W64'), the function will
-#' use the \emph{gdal_polygonize.py} GDAL utility to generate polygonal crown outlines instead.
-#'
-#' @param treetops \link[sp:SpatialPoints]{SpatialPointsDataFrame}. The point locations of treetops. The function will generally produce a
-#' number of crown segments equal to the number of treetops.
-#' @param CHM Canopy height model in \link[raster]{raster} format. Should be the same that was used to create
-#' the input for \code{treetops}.
+#' @param treetops sf. The point locations of treetops in \code{sf} format.
+#' @param CHM SpatRaster. Canopy height model in \code{SpatRaster} format. This should be the same CHM that was used to the detect the \code{treetops}.
 #' @param minHeight numeric. The minimum height value for a \code{CHM} pixel to be considered as part of a crown segment.
 #' All \code{CHM} pixels beneath this value will be masked out. Note that this value should be lower than the minimum
 #' height of \code{treetops}.
 #' @param format string. Format of the function's output. Can be set to either 'raster' or 'polygons'.
-#' @param OSGeoPath character. Optional path to the OSGeo4W installation directory. If both OSGeo4W and Python are installed,
-#' this will enable the function to use a faster algorithm for producing polygonal crown outlines (see Details below).
-#' @param verbose logical. Print processing progress to console.
+#' @param OSGeoPath character. Obsolete. Will be removed next version
+#' @param IDfield character. Name of the field for storing the unique tree identifier
 #'
-#' @return Depending on the argument set with \code{format}, this function will return a map of outlined
-#' crowns as either a RasterLayer (see \link[raster]{raster}), in which distinct crowns
-#' are given a unique cell value, or a \link[sp:SpatialPolygons]{SpatialPolygonsDataFrame}, in which each crown
+#' @return Depending on the setting for \code{format}, this function will return a map of outlined
+#' crowns as either a \code{SpatRaster} class object, in which distinct crowns are given a unique cell value, or a \code{sf} class object, in which each crown
 #' is represented by a polygon.
 #'
 #' @references Meyer, F., & Beucher, S. (1990). Morphological segmentation. \emph{Journal of visual communication and
 #' image representation, 1}(1), 21-46.
 #'
-#' @seealso \code{\link{vwf}} \code{\link{sp_summarise}} \code{\link[imager]{watershed}} \cr \cr
-#' OSGeo4W download page: \url{https://trac.osgeo.org/osgeo4w/}
+#' @seealso \code{\link{vwf}}
 #'
 #' @examples
 #' \dontrun{
-#' # Use variable window filter to detect treetops in demo canopy height model
-#' ttops <- vwf(CHMdemo, winFun = function(x){x * 0.06 + 0.5}, minHeight = 2)
+#' library(terra)
+#' library(ForestTools)
 #'
-#' # Set minimum tree crown height (should be LOWER than minimum treetop height)
-#' minCrwnHgt <- 1
+#' chm <- rast(kootenayCHM)
 #'
-#' # Use 'mcws' to outline tree crowns
-#' segs <- mcws(ttops, CHMdemo, minCrwnHgt)
+#' # Use variable window filter to detect treetops
+#' ttops <- vwf(chm, winFun = function(x){x * 0.06 + 0.5}, minHeight = 2)
+#'
+#' # Segment tree crowns
+#' segs <- mcws(ttops, chm, minHeight = 1)
 #' }
 #'
 #' @export
 
-mcws <- function(treetops, CHM, minHeight = 0, format = "raster", OSGeoPath = NULL, verbose = FALSE){
+mcws <- function(treetops, CHM, minHeight = 0, format = "raster", OSGeoPath = NULL, IDfield = "treeID"){
 
-  if(verbose) cat("Begun 'mcws' process at", format(Sys.time(), "%Y-%m-%d, %X"), "\n\n")
+  if(!is.null(OSGeoPath)) message("'OSGeoPath' argument is now obsolete. Rasters are polygonized using the new 'terra' package now.")
 
-  ### GATE-KEEPER
+  ### INPUTS ----
 
-    # Ensure that 'format' is set to either 'raster' or 'polygons'.
-    if(!toupper(format) %in% c("RASTER", "POLYGONS", "POLYGON", "POLY")){stop("'format' must be set to either 'raster' or 'polygons'")}
+  # Convert 'raster' and 'sp' class types to 'terra' and 'sf'
+  if(inherits(treetops, "SpatialPointsDataFrame")) treetops <- sf::st_as_sf(treetops)
+  if(inherits(CHM, "RasterLayer")) CHM <- terra::rast(CHM)
 
-    if(verbose) cat("..Checking inputs", "\n")
+  # Check classes for 'treetops' and 'CHM'
+  if(!inherits(treetops, "sf") || sf::st_geometry_type(treetops, by_geometry = FALSE) != "POINT") stop("Invalid input: 'treetops' should be 'sf' class with 'POINT' geometry")
+  if(!inherits(CHM, 'SpatRaster')) stop("Invalid input: CHM should be a 'SpatRaster' class")
 
-    # Get maximum height and ensure that 'minHeight' does not exceed it
-    CHM.max <- suppressWarnings(raster::cellStats(CHM, "max"))
-    if(is.infinite(CHM.max)){stop("Input CHM does not contain any usable values.")}
-    if(minHeight > CHM.max){stop("'minHeight' is set higher than the highest cell value in \'CHM\'")}
+  # Ensure that 'format' is set to either 'raster' or 'polygons'.
+  if(!toupper(format) %in% c("RASTER", "POLYGONS", "POLYGON", "POLY")) stop("Invalid input: 'format' must be set to either 'raster' or 'polygons'")
 
-    # Remove treetops that are not within the CHM's input extent, or whose height is lower than 'minHeight'
-    raster::crs(CHM) <- raster::crs(treetops)
-    treetopsHgts <- raster::extract(CHM, treetops)
-    treetops <- treetops[!is.na(treetopsHgts) & treetopsHgts >= minHeight,]
-    if(length(treetops) == 0){stop("No usable treetops. Treetops are either outside of CHM's extent, or are located elow the 'minHeight' value")}
+  # Get maximum height and ensure that 'minHeight' does not exceed it
+  CHM_max <-  terra::global(CHM, fun = max, na.rm = TRUE)[1,"max"]
+  if(!is.finite(CHM_max)) stop("'CHM' does not contain any usable values.")
+  if(minHeight > CHM_max) stop("'minHeight' is set higher than the highest cell value in 'CHM'")
 
-  ### GENERATE UNIQUE TREE IDENTIFIER
-
-    # If treetops do not already have a 'treeID', add one
-    if(!"treeID" %in% names(treetops)){
-      warning("No 'treeID' found for input treetops. New 'treeID' identifiers will be added to segments")
-
-      treetops[["treeID"]] <- 1:length(treetops)
-
-    # Otherwise, check for duplicate 'treeID'
-    }else{
-      if(any(treetops[["treeID"]] == 0)) stop("'treeID' cannot be equal to 0")
-      if(any(duplicated(treetops[["treeID"]]))) warning("Duplicate 'treeID' identifiers detected")
-    }
+  # Remove treetops that are not within the CHM's input extent, or whose height is lower than 'minHeight'
+  treetop_heights <- terra::extract(CHM, treetops)[,2]
+  treetops <- treetops[!is.na(treetop_heights) & treetop_heights >= minHeight,]
+  if(length(treetops) == 0){stop("No usable treetops. Treetops are either outside of CHM's extent, or are located below the 'minHeight' value")}
 
 
-  ### APPLY WATERSHED SEGMENTATION
+  ### CHECK UNIQUE IDENTIFIER ----
 
-      if(verbose) cat("..Masking areas below minimum crown height", "\n")
+  # Check existence of 'IDfield'
+  if(!IDfield %in% names(treetops)) stop("Could not find ID field '", IDfield, "' in 'treetops' object")
+  treetops[[IDfield]] <- as.integer(treetops[[IDfield]])
+  if(any(treetops[[IDfield]] == 0)) stop("'ID field cannot be equal to 0")
+  if(any(is.na(treetops[[IDfield]]))) stop("ID field cannot contain NA values")
+  if(any(duplicated(treetops[[IDfield]]))) warning("ID field cannot have duplicated values")
 
-      # Create NA mask
-      CHM.mask <- is.na(CHM) | CHM < minHeight
 
-      # Replace NAs temporarily with 0s (the 'imager' functions cannot handle NA values)
-      CHM[CHM.mask] <- 0
+  ### APPLY WATERSHED SEGMENTATION ----
 
-      if(verbose) cat("..Seeding treetop locations", "\n")
+  # Create NA mask
+  CHM_mask <- CHM < minHeight
+  CHM_mask[is.na(CHM)] <- TRUE
 
-      # Convert treetops to a raster
-      ttops.ras <- raster::rasterize(treetops, CHM, "treeID", background = 0)
+  # Replace NAs temporarily with 0s (the 'imager' functions cannot handle NA values)
+  CHM[CHM_mask] <- 0
 
-      # Convert data to 'img' files
-      CHM.img <- imager::as.cimg(raster::as.matrix(CHM))
-      ttops.img <- imager::as.cimg(raster::as.matrix(ttops.ras))
+  # Convert treetops to a raster
+  treetops_ras <- terra::rasterize(treetops, CHM, field = IDfield, background = 0)
 
-      if(verbose) cat("..Applying watershed segmentation algorithm", "\n")
+  # Convert data to 'img' files
+  CHM_img   <- imager::as.cimg(terra::as.matrix(CHM, wide = TRUE))
+  ttops_img <- imager::as.cimg(terra::as.matrix(treetops_ras, wide = TRUE))
 
-      # Apply watershed function
-      ws.img <- imager::watershed(ttops.img, CHM.img)
+  # Apply watershed function
+  ws_img <- imager::watershed(ttops_img, CHM_img)
 
-      # Convert watershed back to raster
-      ws.ras <- raster::raster(vals = ws.img[,,1,1], nrows = nrow(CHM), ncols = ncol(CHM),
-                       ext = raster::extent(CHM), crs = raster::crs(CHM))
-      ws.ras[CHM.mask] <- NA
+  # Convert watershed back to raster
+  ws_ras <- terra::rast(as.matrix(ws_img), extent = terra::rast(CHM), crs = terra::crs(CHM))
+  ws_ras[CHM_mask] <- NA
 
-  ### CONVERT TO POLYGONS
 
-      if(toupper(format) %in% c("POLYGONS", "POLYGON", "POLY")){
+  ### RETURN POLYGONS ----
 
-        if(verbose) cat("..Converting to segments to polygons (this could take a while)", "\n")
+  if(toupper(format) %in% c("POLYGONS", "POLYGON", "POLY")){
 
-        # Convert raster to polygons
-        if(is.null(OSGeoPath)){
+    # Convert raster to polygons
+    polys <- sf::st_as_sf(terra::as.polygons(ws_ras, dissolve = TRUE))
 
-          # Using 'raster' package...
-          polys <- raster::rasterToPolygons(ws.ras)
-          polys <- rgeos::gUnaryUnion(polys, id = polys[["layer"]])
-          polys <- sp::disaggregate(polys)
+    # Cast to MULTIPOLYGONS (this avoids introducing weird stuff like GEOMETRY COLLECTION)
+    polys <- sf::st_cast(polys, "MULTIPOLYGON")
 
-        }else{
+    # Split apart multi polygons
+    polys <- sf::st_cast(polys, "POLYGON", warn = FALSE)
 
-          # Using OSGeo....
-          polys <- APfun::APpolygonize(ws.ras, OSGeoPath = OSGeoPath)
-        }
+    if(nrow(polys) == 0) stop("No segments created")
 
-        if(verbose) cat("..Matching polygons to treetops", "\n")
+    names(polys)[1] <- IDfield
+    row.names(polys) <- 1:nrow(polys)
 
-        # Perform spatial overlay, transfer data from treetops to polygons
-        polys.out  <- sp::SpatialPolygonsDataFrame(polys, sp::over(polys, treetops))
+    # Perform spatial overlay, transfer data from treetops to polygons
+    polys_out <- polys[lengths(sf::st_intersects(polys, treetops)) > 0,]
 
-        # Remove polygons with no associated treetops
-        polys.out  <- polys.out[!is.na(polys.out[["treeID"]]),]
+    # Remove polygons with no associated treetops
+    polys_out  <- polys_out[!is.na(polys_out[[IDfield]]),]
 
-        if(verbose) cat("..Computing segment areas", "\n")
+    if(any(duplicated(polys_out[[IDfield]]))) stop("Multiple segments with same ID field. Check for duplicated treetops")
 
-        # Set new field for crown areas
-        if("crownArea" %in% names(polys.out)){
-          i <- 1
-          while(paste0("crownArea", i) %in% names(polys.out)) i <- i + 1
-          crownArea <- paste0("crownArea", i)
-          warning("Input data already has a 'crownArea' field. Writing new crown area values to the 'crownArea",i,"' field")
-        }else{
-          crownArea <- "crownArea"
-        }
+    return(polys_out)
 
-        # Compute crown areas
-        polys.out[[crownArea]] <- rgeos::gArea(polys.out, byid = TRUE)
 
-        if(verbose) cat("..Returning crown outlines as polygons\n\nFinished at:", format(Sys.time(), "%Y-%m-%d, %X"), "\n")
-        return(polys.out)
+  ### RETURN RASTER ----
 
-      }else{
+  }else{
 
-        if(verbose) cat("..Returning crown outlines as a raster\n\nFinished at:", format(Sys.time(), "%Y-%m-%d, %X"), "\n")
-        return(ws.ras)
-      }
+    # Remove "orphaned" segments. NOTE: The 'watershed' algorithm needs to be rewritten to avoid this whole thing
+    #
+    # NOTE: Currently deactivated cause it's too slow
+    #
+    # ws_patches <- terra::patches(ws_ras)
+    # ws_patches_valid <-  unique(terra::extract(ws_patches, treetops)[,2])
+    # ws_ras[!ws_patches %in% ws_patches_valid] <- NA
+
+    return(ws_ras)
+  }
 }
