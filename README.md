@@ -125,7 +125,7 @@ The following is a non-exhaustive list of research papers that use the ForestToo
 
 * [Detection of aspen in conifer-dominated boreal forests with seasonal multispectral drone image point clouds](https://www.silvafennica.fi/article/10515/author/20257) by Hardenbol, A. A., Kuzmin, A., Korhonen, L., Korpelainen, P., Kumpula, T., Maltamo, M., & Kouki, J. (2021)
 
-* [Correcting tree count bias for objects segmented from lidar point clouds](http://mcfns.net/index.php/Journal/article/view/13.3) by Strub, M. R., & Osborne, N. (2021)
+* [Correcting tree count bias for objects segmented from lidar point clouds](https://www.proquest.com/openview/4c03d80d21aa8d71509deaae79259b9f/1?pq-origsite=gscholar&cbl=2030384) by Strub, M. R., & Osborne, N. (2021)
 
 * [Comparison of Accuracy between Analysis Tree Detection in UAV Aerial Image Analysis and Quadrat Method for Estimating the Number of Trees to be Removed in the Environmental Impact Assessment](https://koreascience.kr/article/JAKO202118752917743.page) by Park, M. (2021)
 
@@ -135,7 +135,7 @@ The following is a non-exhaustive list of research papers that use the ForestToo
 
 * [Uav-based lidar scanning for individual tree detection and height measurement in young forest permanent trials](https://www.mdpi.com/2072-4292/14/1/170) by Rodríguez-Puerta, F., Gómez-García, E., Martín-García, S., Pérez-Rodríguez, F., & Prada, E. (2021)
 
-* [UAV-derived forest degradation assessments for planning and monitoring forest ecosystem restoration: towards a forest degradation index](https://www.cifor.org/knowledge/publication/8199) by Lee, K. (2021)
+* [UAV-derived forest degradation assessments for planning and monitoring forest ecosystem restoration: towards a forest degradation index](https://www.cifor.org/knowledge/publication/8199/) by Lee, K. (2021)
 
 * [Potential for Individual Tree Monitoring in Ponderosa Pine-Dominated Forests Using Unmanned Aerial System Structure from Motion Point Clouds](https://cdnsciencepub.com/doi/abs/10.1139/cjfr-2020-0433) by Creasy, M. B., Tinkham, W. T., Hoffman, C. M., & Vogeler, J. C. (2021)
 

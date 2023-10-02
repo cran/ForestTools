@@ -1,7 +1,7 @@
-32a9af5b890bfe97a922f848c972090f *DESCRIPTION
+427001dfe3baad3c3942e8f95908c51e *DESCRIPTION
 6c038776695a846057b6123e63c67f0c *NAMESPACE
-579d5580d08b54b32ae8be714907e508 *NEWS.md
-e4eefe29bc440843d00d3317be376f3a *R/ForestTools.R
+fa9c570a256f091f697b00b8202cae61 *NEWS.md
+6142655cf1c9a9f1fc7928f8f2ca1405 *R/ForestTools-package.R
 2c99b78c68c128b7041388f58b7de766 *R/Kootenay.R
 d8593d0524d7399a04946b51e938c41b *R/Quesnel.R
 41d9b94f2c8bf627597c7040daa5c91b *R/RcppExports.R
@@ -9,8 +9,7 @@ ab464b2433f7c6671b0683636513b472 *R/glcm.R
 f3654d1809bd46a424ecba299bb168b3 *R/glcm_stats.R
 3d652a3bffd726907168a5b52497e940 *R/mwcs.R
 8fdd850e498c920de8ec258e928299cc *R/vwf.R
-079bdb03ffd108f6650e8f8649b292d4 *R/zzz.R
-51dc3cb61f1c282a6b7e2c6ac3f0371c *README.md
+70d9935cd0ebe2215321ddcde752f5c0 *README.md
 5afa700d8e3ff8c979f1d2598637096b *build/vignette.rds
 198305491c14a4730c3392160f1c6e07 *data/kootenayBlocks.rda
 a222a362436730b3bdc533dae13292c5 *data/kootenayCHM.rda
@@ -22,8 +21,8 @@ f9f65641b4b279e8bcff3dfeef9ab93c *data/kootenayOrtho.rda
 2f94750f81ec385e81367ac65c4ef81d *data/quesnelTrees.rda
 f001de9c5ba30d9b63b4ea33d343c84c *inst/doc/treetop_analysis.R
 1b90ba2eef339740cf77160ec7a33a53 *inst/doc/treetop_analysis.Rmd
-488743e641773db9888cb652a32ebd56 *inst/doc/treetop_analysis.html
-0c8ddc7736921cb1521a4d479119afdc *man/ForestTools.Rd
+6d958ec1d81dbe7e9c52e0810f63f703 *inst/doc/treetop_analysis.html
+7308cd186bb29d4493fadea07a0ad67c *man/ForestTools-package.Rd
 e2c9ae7dd193b47484cf6d0d3a746d01 *man/figures/logo.png
 9d69deb0e0b5e6b43c9d415287a3b2c2 *man/figures/treetops_segments.png
 075d4c3385826b429b2980cd51d3488b *man/glcm.Rd
@@ -44,6 +43,7 @@ cdec7069b23d77bdde876386b0c660ad *man/kootenayTrees.Rd
 4a96ffd18f3671031e123b01d9a03489 *man/vwf.Rd
 470f3efe73ff42ea6eec62da77039da2 *src/RcppExports.cpp
 0d97d52eada23f585dee818f5fce8892 *src/glcm.cpp
+93e9030d68d134408e8fb701c9853c9e *tests/testthat.R
 320e774d2f73b1164bcbcf6e0cf99014 *tests/testthat/test_data/CHM_3amigos.tif
 3e171343f4fae48df66b0260d0f28fa2 *tests/testthat/test_data/CHM_empty.tif
 93a444806c603ccc02c7628e0bedbdd2 *tests/testthat/test_data/CHM_latlon.tif
@@ -61,10 +61,10 @@ e8cd970e412ee740d63e8968970cac2b *tests/testthat/test_data/glcm-tumor.rda
 28856a3e0d713290b54b2e38074bb39f *tests/testthat/test_data/ttops_3amigos.Rda
 41bcd5d632ffeffcb2da8be574a74600 *tests/testthat/test_data/ttops_orphans.Rda
 0d1403255e304f0ef548abcba8a5c4e1 *tests/testthat/test_data/ttops_test.Rda
-bd547aec0b820cd7a9c74a491284a548 *tests/testthat/test_glcm.R
-e162fb197517e5d39640042d26b8c5df *tests/testthat/test_glcm_internal.R
-306d25ff4324d6b680cd147d57fb2f45 *tests/testthat/test_mcws.R
-c14b392c61cd84033a7946f46141fa89 *tests/testthat/test_vwf.R
+516adeb10fd4b807b04eed0f7bfe7272 *tests/testthat/test_glcm.R
+7ad963ebf527c4c9fd84d7307f915ebb *tests/testthat/test_glcm_internal.R
+241303947ea500363ffb196e5fef2310 *tests/testthat/test_mcws.R
+dd94bb9e80dc4aa61308aa9d41bf4a61 *tests/testthat/test_vwf.R
 11f853ece8b514c3ea4cb572a06064fc *tests/testthat/validation_data/glcm/bars0.csv
 11f853ece8b514c3ea4cb572a06064fc *tests/testthat/validation_data/glcm/bars135.csv
 11f853ece8b514c3ea4cb572a06064fc *tests/testthat/validation_data/glcm/bars45.csv
